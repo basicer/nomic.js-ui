@@ -46,6 +46,10 @@ import LayersIcon from '@material-ui/icons/Layers';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
+import {Provider, useDispatch} from 'react-redux';
+import {createStore} from 'redux';
+import reducer from './reducer';
+
 //import { mainListItems, secondaryListItems } from './listItems';
 
 //import Chart from './Chart';
@@ -57,6 +61,11 @@ import Users from './Users';
 import Inspect from './Inspect';
 
 const drawerWidth = 240;
+
+const store = createStore(
+  reducer,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+);
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -140,6 +149,28 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+function EventConnector() {
+  let dispatch = useDispatch();
+  React.useEffect(() => {
+    let base = window.localStorage.base || 'https://nomicjs.basicer.repl.co';
+    let events = new EventSource(base + "/event-stream");
+    window.es = events;
+    events.onopen = () => console.log("Open");
+
+    events.addEventListener("initial", function(e) { 
+      dispatch({type: 'initial', data: JSON.parse(e.data)})
+    });
+
+    events.addEventListener("update", function(e) { 
+      dispatch({type: 'update', data: JSON.parse(e.data)})
+    });
+
+
+  }, []);
+  
+  return <></>
+}
+
 export default function App() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
@@ -158,6 +189,8 @@ export default function App() {
 	});
 
   return (
+  <Provider store={store}>
+  <EventConnector />
 	<BrowserRouter>
 	<ThemeProvider theme={theme}>
     <div className={classes.root}>
@@ -255,5 +288,6 @@ export default function App() {
     </div>
 	</ThemeProvider>
 	</BrowserRouter>
+  </Provider>
   );
 }
