@@ -6,44 +6,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeItem from '@material-ui/lab/TreeItem';
 
-function reconstruct(x) {
-	let refrences = x.refrences;
-	let resolved = {};
-	function o(what) {
-		if (what.$ref) {
-			if (!resolved[what.$ref]) {
-				resolved[what.$ref] = {};
-				Object.assign(resolved[what.$ref], o(refrences[what.$ref]));
-			}
-			return resolved[what.$ref];
-		}
-		if (what.$v) {
-			return what.$v;
-		}
-		if (what.$t == "undefined") return 'undefined';
-		else if (what === null) return 'null';
-		else if (what.$t == "object") {
-			let p = {};
-			for ( let k in what.prop ) {
-				p[k] = o(what.prop[k].v);
-			}
-			return p;
-		}
-		if (what.$t == "function") {
-			let p = {src:what.src};
-			for ( let k in what.prop ) {
-				p[k] = o(what.prop[k].v);
-			}
-			p.upvars = {};
-			for ( let k in what.upvars ) {
-				p.upvars[k] = o(what.upvars[k]);
-			}
-			return p;
-		}
-		return what;
-	}
-	return o(x.root);
-}
+import { shallowEqual, useSelector } from 'react-redux';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -78,16 +41,7 @@ class ErrorBoundary extends React.Component {
 
 export default function Inspect() {
 
-	const [data, setData] = React.useState({});
-	React.useEffect(() => { fetch(
-			'https://nomicjs.basicer.repl.co/api/inspect'
-		).then(function (response) {
-			return response.json();
-		}).then(function (data) {
-			setData(reconstruct(data));
-		})
-	}
-	,[]);
+	const data = useSelector(store => store.state);
 
 	let seen = new WeakMap();
 	const renderTree = (element, n, path) => {

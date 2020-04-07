@@ -1,6 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
+import { useSelector, useDispatch } from 'react-redux';
 
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -35,17 +36,16 @@ function wait(n) {
 
 function Proposal({name, data}) {
 	const classes = useStyles();
-
+	const dispatch = useDispatch();
 
 	return (<Card className={classes.root}>
-
       <CardHeader
         avatar={
           <Avatar className={classes.avatar}>
           </Avatar>
         }
         action={
-          <IconButton aria-label="settings">
+          <IconButton aria-label="settings" onClick={() => dispatch({type: 'blah'})}>
             <MoreVertIcon />
           </IconButton>
         }
@@ -64,17 +64,7 @@ export default function Users() {
 
 	const classes = useStyles();
 	
-	const [data, setData] = React.useState({});
-	React.useEffect(() => { fetch(
-			'https://nomicjs.basicer.repl.co/api/users'
-		).then(function (response) {
-			return response.json();
-		}).then(function (data) {
-			setData(data);
-			console.log(data);
-		})
-	}
-	,[]);
+	const data = useSelector(store => store.state && store.state.users);
 		
 
 	let result = [];

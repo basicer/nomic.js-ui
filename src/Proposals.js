@@ -1,6 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
+import { useSelector, useDispatch } from 'react-redux';
 
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -11,7 +12,7 @@ import Collapse from '@material-ui/core/Collapse';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import { red } from '@material-ui/core/colors';
+import { red, green } from '@material-ui/core/colors';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -34,8 +35,11 @@ const useStyles = makeStyles(theme => ({
   expandOpen: {
     transform: 'rotate(180deg)',
   },
-  avatar: {
+  red: {
     backgroundColor: red[500],
+  },
+  green: {
+    backgroundColor: green[500],
   },
   fab: {
     position: 'fixed',
@@ -62,7 +66,7 @@ function Proposal({name, data}) {
 
       <CardHeader
         avatar={
-          <Avatar aria-label="recipe" className={classes.avatar}>
+          <Avatar aria-label="recipe" className={data.status != 'passed' ? classes.red : classes.green}>
             {name}
           </Avatar>
         }
@@ -112,18 +116,8 @@ export default function Proposals() {
 
 	const classes = useStyles();
 	
-	const [data, setData] = React.useState({});
-	React.useEffect(() => { fetch(
-			'https://nomicjs.basicer.repl.co/api/proposals'
-		).then(function (response) {
-			return response.json();
-		}).then(function (data) {
-			setData(data);
-			console.log(data);
-		})
-	}
-	,[]);
-		
+	const data = useSelector(store => store.state && store.state.proposals);
+	console.log(data);
 
 	let result = [];
 	for ( let k in data ) {
