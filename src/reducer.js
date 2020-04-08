@@ -5,6 +5,9 @@ function reconstruct(x) {
 		if (what.$ref) {
 			if (!resolved[what.$ref]) {
 				let x = {};
+				if ( references[what.$ref].$t == 'function' ) {
+					x = new Function(references[what.$ref].src);
+				}
 				if ( references[what.$ref].proto.$s == '%ArrayPrototype%' ) {
 					x = [];
 				}
