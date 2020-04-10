@@ -84,7 +84,7 @@ const useStyles = makeStyles(theme => ({
 	},
 	rightButton: {
 		float: "right"
-	},
+	}
 }));
 
 export default useStyles;
