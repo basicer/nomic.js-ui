@@ -20,75 +20,90 @@ import ListSubheader from "@material-ui/core/ListSubheader";
 import SettingsBrightnessIcon from "@material-ui/icons/SettingsBrightness";
 import DnsIcon from "@material-ui/icons/Dns";
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogTitle from "@material-ui/core/DialogTitle";
 
+export default function SettingsDialog({
+	settingsOpen,
+	handleClickOpen,
+	handleClose
+}) {
+	const store = useSelector(x => x);
+	const dispatch = useDispatch();
+	const [state, setState] = React.useState({
+		base: store.settings.base
+	});
 
-export default function SettingsDialog({settingsOpen, handleClickOpen, handleClose}) {
+	const Transition = undefined;
 
-    const store = useSelector(x => x);
-    const dispatch = useDispatch();
-    const [state, setState] = React.useState({
-        base: store.settings.base
-    })
+	function apply() {
+		dispatch({ type: "SET_SETTING", key: "base", value: state.base });
+		handleClose();
+	}
 
-    const Transition = undefined;
-
-    function apply() {
-        dispatch({type: 'SET_SETTING', key:'base', value: state.base});
-        handleClose();
-    }
-
-    return (<Dialog fullWidth open={settingsOpen} keepMounted onClose={handleClose} aria-labelledby="alert-dialog-title" TransitionComponent={Transition}>
-    <DialogTitle id="alert-dialog-title">{"Settings"}</DialogTitle>
-    <List>
-        <Divider />
-        <ListItem>
-            <ListItemIcon>
-                <SettingsBrightnessIcon />
-            </ListItemIcon>
-            <ListItemText id="switch-list-label-wifi" primary="Dark Mode" />
-            <ListItemSecondaryAction>
-                <ToggleSwitch
-                    edge="end"
-                    onChange={() => dispatch({ type: 'THEME', theme: store.theme === 'light' ? 'dark' : 'light' })}
-                    checked={store.theme !== 'light'}
-                    inputProps={{ 'aria-labelledby': 'switch-list-label-wifi' }}
-                />
-            </ListItemSecondaryAction>
-        </ListItem>
-        <Divider />
-        <ListItem>
-            <ListItemIcon>
-                <DnsIcon />
-            </ListItemIcon>
-            <ListItemText id="switch-list-label-wifi" primary="Server" />
-            <ListItemSecondaryAction>
-                <TextField
-                    value={state.base}
-                    onChange={(e) => setState({...state, base: e.target.value})}
-                    checked={true}
-                    inputProps={{ 'aria-labelledby': 'switch-list-label-wifi' }}
-                />
-            </ListItemSecondaryAction>
-        </ListItem>
-        {/*
+	return (
+		<Dialog
+			fullWidth
+			open={settingsOpen}
+			keepMounted
+			onClose={handleClose}
+			aria-labelledby="alert-dialog-title"
+			TransitionComponent={Transition}
+		>
+			<DialogTitle id="alert-dialog-title">{"Settings"}</DialogTitle>
+			<List>
+				<Divider />
+				<ListItem>
+					<ListItemIcon>
+						<SettingsBrightnessIcon />
+					</ListItemIcon>
+					<ListItemText id="switch-list-label-wifi" primary="Dark Mode" />
+					<ListItemSecondaryAction>
+						<ToggleSwitch
+							edge="end"
+							onChange={() =>
+								dispatch({
+									type: "THEME",
+									theme: store.theme === "light" ? "dark" : "light"
+								})
+							}
+							checked={store.theme !== "light"}
+							inputProps={{ "aria-labelledby": "switch-list-label-wifi" }}
+						/>
+					</ListItemSecondaryAction>
+				</ListItem>
+				<Divider />
+				<ListItem>
+					<ListItemIcon>
+						<DnsIcon />
+					</ListItemIcon>
+					<ListItemText id="switch-list-label-wifi" primary="Server" />
+					<ListItemSecondaryAction>
+						<TextField
+							value={state.base}
+							onChange={e => setState({ ...state, base: e.target.value })}
+							checked={true}
+							inputProps={{ "aria-labelledby": "switch-list-label-wifi" }}
+						/>
+					</ListItemSecondaryAction>
+				</ListItem>
+				{/*
         <Divider />
         <ListItem button>
             <ListItemText primary="Default notification ringtone" secondary="Tethys" />
         </ListItem>
         */}
-    </List>
-    <Divider />
-    <DialogActions>
-        <Button onClick={handleClose} color="secondary" variant="contained">
-            Cancel
-        </Button>
-        <Button onClick={apply} color="primary" variant="contained" autoFocus>
-            Apply
-        </Button>
-    </DialogActions>
-</Dialog>);
-
+			</List>
+			<Divider />
+			<DialogActions>
+				<Button onClick={handleClose} color="secondary" variant="contained">
+					Cancel
+				</Button>
+				<Button onClick={apply} color="primary" variant="contained" autoFocus>
+					Apply
+				</Button>
+			</DialogActions>
+		</Dialog>
+	);
 }

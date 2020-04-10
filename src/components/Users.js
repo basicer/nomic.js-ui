@@ -26,7 +26,6 @@ const useStyles = makeStyles(theme => ({
 	}
 }));
 
-
 function User({ name, data }) {
 	const classes = useStyles();
 	const dispatch = useDispatch();

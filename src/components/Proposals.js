@@ -19,9 +19,9 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import Fab from "@material-ui/core/Fab";
-import {Add as AddIcon, Done as DoneIcon} from "@material-ui/icons";
+import { Add as AddIcon, Done as DoneIcon } from "@material-ui/icons";
 
-import {useUser} from "../hooks";
+import { useUser } from "../hooks";
 
 import Highlight from "react-highlight.js";
 import api from "../api";
@@ -49,22 +49,21 @@ const useStyles = makeStyles(theme => ({
 	fab: {
 		position: "fixed",
 		bottom: theme.spacing(2),
-		right: theme.spacing(4),
+		right: theme.spacing(4)
 	},
 	bar: {
-		display: 'flex',
-		flexWrap: 'wrap',
-		padding: theme.spacing(0.5),
+		display: "flex",
+		flexWrap: "wrap",
+		padding: theme.spacing(0.5)
 	},
 	chip: {
-		margin: theme.spacing(0.5),
+		margin: theme.spacing(0.5)
 	}
 }));
 
 function Proposal({ name, data }) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
-
 
 	const [expanded, setExpanded] = React.useState(data.status !== "passed");
 
@@ -94,19 +93,20 @@ function Proposal({ name, data }) {
 			<Collapse in={expanded} timeout="auto" unmountOnExit>
 				<CardContent>
 					<Typography variant="body2" color="textSecondary" component="p">
-						
 						<Paper variant="outlined" className={classes.bar}>
-						<strong className={classes.chip}>Votes:</strong>
-						{data.votes.map(x => <Chip
-							className={classes.chip}
-							clickable
-							size="small"
-							avatar={<Avatar>{x.substr(0,1)}</Avatar>}
-							color="primary"
-							label={x}
-							onDelete={() => false}
-							deleteIcon={<DoneIcon />}
-						/>)}
+							<strong className={classes.chip}>Votes:</strong>
+							{data.votes.map(x => (
+								<Chip
+									className={classes.chip}
+									clickable
+									size="small"
+									avatar={<Avatar>{x.substr(0, 1)}</Avatar>}
+									color="primary"
+									label={x}
+									onDelete={() => false}
+									deleteIcon={<DoneIcon />}
+								/>
+							))}
 						</Paper>
 						<Highlight>{data.code}</Highlight>
 					</Typography>
@@ -159,14 +159,18 @@ export default function Proposals() {
 	return (
 		<React.Fragment>
 			<Container>
-			{result.reverse()}
-			{ user && (
-			<Fab color="primary" aria-label="add" className={classes.fab} onClick={() => history.push('/proposals/new')}>
-				<AddIcon />
-			</Fab>
-			)}
+				{result.reverse()}
+				{user && (
+					<Fab
+						color="primary"
+						aria-label="add"
+						className={classes.fab}
+						onClick={() => history.push("/proposals/new")}
+					>
+						<AddIcon />
+					</Fab>
+				)}
 			</Container>
-			
 		</React.Fragment>
 	);
 }

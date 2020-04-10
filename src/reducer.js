@@ -48,14 +48,14 @@ function reconstruct(x) {
 
 const defaultStore = {
 	settings: {
-		base: (window.localStorage.base || "https://nomicjs.basicer.repl.co")
+		base: window.localStorage.base || "https://nomicjs.basicer.repl.co"
 	}
 };
 
 export default function reducer(store = defaultStore, action) {
 	switch (action.type) {
 		case "NEW_SERVER":
-			return {...store, state: {}, data: {}};
+			return { ...store, state: {}, data: {} };
 		case "INITIAL_STATE":
 			return { ...store, state: reconstruct(action.data), data: action.data };
 		case "UPDATE_STATE":
@@ -81,7 +81,10 @@ export default function reducer(store = defaultStore, action) {
 			console.log(action);
 			return { ...store, user: action.user };
 		case "SET_SETTING":
-			return {...store, settings: {...store.settings, [action.key]: action.value}};
+			return {
+				...store,
+				settings: { ...store.settings, [action.key]: action.value }
+			};
 		default:
 			return store;
 	}

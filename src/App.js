@@ -48,7 +48,6 @@ import WifiIcon from "@material-ui/icons/Wifi";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 //import NotificationsIcon from "@material-ui/icons/Notifications";
 
-
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -63,12 +62,10 @@ import Login from "./components/Login";
 import Navigation from "./components/Navigation";
 import SettingsDialog from "./components/SettingsDialog";
 
-
 import useStyles from "./styles";
 
 import { useUser } from "./hooks";
 import api from "./api";
-
 
 function Alert(props) {
 	return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -82,7 +79,7 @@ function EventConnector() {
 		let events = new EventSource(base + "/event-stream");
 		window.es = events;
 		events.onopen = () => console.log("Open");
-		dispatch({ type: 'NEW_SERVER' });
+		dispatch({ type: "NEW_SERVER" });
 		events.addEventListener("initial", function(e) {
 			dispatch({ type: "INITIAL_STATE", data: JSON.parse(e.data) });
 		});
@@ -131,7 +128,6 @@ function Header({ open, handleDrawerOpen }) {
 	const history = useHistory();
 	const classes = useStyles();
 	const user = useUser();
-
 
 	const [settingsOpen, setSettingsOpen] = React.useState(false);
 	const handleClickOpen = () => {
@@ -182,7 +178,11 @@ function Header({ open, handleDrawerOpen }) {
 				</IconButton>
 				{user ? user.name : ""}
 			</Toolbar>
-			<SettingsDialog handleClickOpen={handleClickOpen} handleClose={handleClose} settingsOpen={settingsOpen} />
+			<SettingsDialog
+				handleClickOpen={handleClickOpen}
+				handleClose={handleClose}
+				settingsOpen={settingsOpen}
+			/>
 		</AppBar>
 	);
 }
@@ -213,7 +213,6 @@ export default function App() {
 
 	return (
 		<>
-
 			<EventConnector />
 			<ApiConnector />
 			<BrowserRouter>

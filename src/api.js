@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const client = axios.create({
-});
+const client = axios.create({});
 
 function setAuth(username, password) {
 	client.defaults.auth = {
@@ -17,4 +16,8 @@ setAuth(
 );
 */
 
-export default { ...client, setAuth, setBase: (base) => client.defaults.baseURL = base + "/api"  };
+export default {
+	...client,
+	setAuth,
+	setBase: base => (client.defaults.baseURL = base + "/api")
+};
