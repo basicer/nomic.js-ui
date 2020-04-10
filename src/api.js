@@ -1,8 +1,6 @@
 import axios from "axios";
 
 const client = axios.create({
-	baseURL:
-		(window.localStorage.base || "https://nomicjs.basicer.repl.co") + "/api"
 });
 
 function setAuth(username, password) {
@@ -19,4 +17,4 @@ setAuth(
 );
 */
 
-export default { ...client, setAuth };
+export default { ...client, setAuth, setBase: (base) => client.defaults.baseURL = base + "/api"  };

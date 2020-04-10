@@ -1,12 +1,13 @@
 import React from "react";
 import Paper from "@material-ui/core/Paper";
-import TreeView from "@material-ui/lab/TreeView";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import TreeItem from "@material-ui/lab/TreeItem";
+
+//import TreeView from "@material-ui/lab/TreeView";
+//import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+//import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+//import TreeItem from "@material-ui/lab/TreeItem";
+
 import { ObjectInspector, ObjectLabel, ObjectRootLabel } from "react-inspector";
 
-import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { shallowEqual, useSelector } from "react-redux";
 import Highlight from "react-highlight.js";
 
@@ -40,14 +41,13 @@ class ErrorBoundary extends React.Component {
 
 export default function Inspect() {
 	const data = useSelector(store => store.state);
-	const theme = useMediaQuery("(prefers-color-scheme: dark)")
-		? "chromeDark"
-		: "chromeLight";
+	const myTheme = useSelector(store => store.theme);
+	const theme = myTheme === "dark" ? "chromeDark" : "chromeLight";
 
 	const nodeRenderer = ({ depth, name, data, isNonenumerable, expanded }) => {
 		if (depth === 0) return <ObjectRootLabel name={name} data={data} />;
 		if (
-			(name == "src" || name == "code") &&
+			(name === "src" || name === "code") &&
 			typeof data == "string" &&
 			data.length > 0
 		) {

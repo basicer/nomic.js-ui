@@ -1,5 +1,4 @@
 import React from "react";
-import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -27,11 +26,6 @@ const useStyles = makeStyles(theme => ({
 	}
 }));
 
-function wait(n) {
-	return new Promise((res, rej) => {
-		setTimeout(res, n);
-	});
-}
 
 function User({ name, data }) {
 	const classes = useStyles();
@@ -63,8 +57,6 @@ function User({ name, data }) {
 }
 
 export default function Users() {
-	const classes = useStyles();
-
 	const data = useSelector(store => store.state && store.state.users);
 
 	let result = [];

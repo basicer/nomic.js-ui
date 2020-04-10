@@ -26,47 +26,49 @@ import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
-//mport Badge from "@material-ui/core/Badge";
+import ToggleSwitch from "@material-ui/core/Switch";
+import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
 //import Paper from "@material-ui/core/Paper";
 //import Link from "@material-ui/core/Link";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import ListSubheader from "@material-ui/core/ListSubheader";
 
 import MenuIcon from "@material-ui/icons/Menu";
+import SettingsIcon from "@material-ui/icons/Settings";
+import CloseIcon from "@material-ui/icons/Close";
 import ListIcon from "@material-ui/icons/List";
+import WifiIcon from "@material-ui/icons/Wifi";
 
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 //import NotificationsIcon from "@material-ui/icons/Notifications";
 
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-//import ListSubheader from "@material-ui/core/ListSubheader";
-import DashboardIcon from "@material-ui/icons/Dashboard";
-//import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import PeopleIcon from "@material-ui/icons/People";
-//import BarChartIcon from "@material-ui/icons/BarChart";
-import LayersIcon from "@material-ui/icons/Layers";
-//import AssignmentIcon from "@material-ui/icons/Assignment";
+
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 
-import { Provider, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 //import { mainListItems, secondaryListItems } from './listItems';
 
-//import Chart from './Chart';
-//import Deposits from './Deposits';
-//import Orders from './Orders';
+import Proposals from "./components/Proposals";
+import NewProposal from "./components/NewProposal";
+import Users from "./components/Users";
+import Inspect from "./components/Inspect";
+import Login from "./components/Login";
+import Navigation from "./components/Navigation";
+import SettingsDialog from "./components/SettingsDialog";
 
-import Proposals from "./Proposals";
-import Users from "./Users";
-import Inspect from "./Inspect";
-import Login from "./Login";
-import Navigation from "./Navigation";
 
 import useStyles from "./styles";
 
 import { useUser } from "./hooks";
+import api from "./api";
+
 
 function Alert(props) {
 	return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -74,21 +76,35 @@ function Alert(props) {
 
 function EventConnector() {
 	let dispatch = useDispatch();
+	let settings = useSelector(store => store.settings);
 	React.useEffect(() => {
-		let base = window.localStorage.base || "https://nomicjs.basicer.repl.co";
+		let base = settings.base;
 		let events = new EventSource(base + "/event-stream");
 		window.es = events;
 		events.onopen = () => console.log("Open");
-
+		dispatch({ type: 'NEW_SERVER' });
 		events.addEventListener("initial", function(e) {
-			dispatch({ type: "initial", data: JSON.parse(e.data) });
+			dispatch({ type: "INITIAL_STATE", data: JSON.parse(e.data) });
 		});
 
 		events.addEventListener("update", function(e) {
-			dispatch({ type: "update", data: JSON.parse(e.data) });
+			dispatch({ type: "UPDATE_STATE", data: JSON.parse(e.data) });
 		});
-	}, []);
 
+		return () => {
+			events.close();
+		};
+	}, [settings.base, dispatch]);
+
+	return <></>;
+}
+
+function ApiConnector() {
+	let store = useSelector(store => store.settings);
+	React.useEffect(() => {
+		console.log("Base", store.base);
+		api.setBase(store.base);
+	}, [store.base]);
 	return <></>;
 }
 
@@ -115,6 +131,17 @@ function Header({ open, handleDrawerOpen }) {
 	const history = useHistory();
 	const classes = useStyles();
 	const user = useUser();
+
+
+	const [settingsOpen, setSettingsOpen] = React.useState(false);
+	const handleClickOpen = () => {
+		setSettingsOpen(true);
+	};
+
+	const handleClose = () => {
+		setSettingsOpen(false);
+	};
+
 	return (
 		<AppBar
 			position="absolute"
@@ -147,11 +174,15 @@ function Header({ open, handleDrawerOpen }) {
           </IconButton>
 		  */}
 
+				<IconButton color="inherit" onClick={handleClickOpen}>
+					<SettingsIcon />
+				</IconButton>
 				<IconButton color="inherit" onClick={() => history.push("/login")}>
 					<AccountCircleIcon />
 				</IconButton>
 				{user ? user.name : ""}
 			</Toolbar>
+			<SettingsDialog handleClickOpen={handleClickOpen} handleClose={handleClose} settingsOpen={settingsOpen} />
 		</AppBar>
 	);
 }
@@ -182,7 +213,9 @@ export default function App() {
 
 	return (
 		<>
+
 			<EventConnector />
+			<ApiConnector />
 			<BrowserRouter>
 				<ThemeProvider theme={theme}>
 					<div className={classes.root}>
@@ -193,6 +226,9 @@ export default function App() {
 							<div className={classes.appBarSpacer} />
 							<Container maxWidth="lg" className={classes.container}>
 								<Switch>
+									<Route path="/proposals/new">
+										<NewProposal />
+									</Route>
 									<Route path="/proposals">
 										<Proposals />
 									</Route>

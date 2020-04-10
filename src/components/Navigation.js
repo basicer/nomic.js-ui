@@ -2,21 +2,17 @@ import React from "react";
 import Drawer from "@material-ui/core/Drawer";
 import clsx from "clsx";
 
-import useStyles from "./styles";
+import useStyles from "../styles";
 
-import MuiAlert from "@material-ui/lab/Alert";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
-import Typography from "@material-ui/core/Typography";
+//import List from "@material-ui/core/List";
+//import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
+//import Container from "@material-ui/core/Container";
+//import Grid from "@material-ui/core/Grid";
 
 import { NavLink as RouterLink } from "react-router-dom";
 
-import MenuIcon from "@material-ui/icons/Menu";
-import ListIcon from "@material-ui/icons/List";
 
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 
@@ -24,6 +20,9 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 //import ListSubheader from "@material-ui/core/ListSubheader";
+
+//import MenuIcon from "@material-ui/icons/Menu";
+import ListIcon from "@material-ui/icons/List";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 //import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import PeopleIcon from "@material-ui/icons/People";
@@ -64,7 +63,6 @@ export default function Navigation({ open, handleDrawerClose }) {
 					button
 					activeClassName="Mui-selected"
 					component={RouterLink}
-					component={RouterLink}
 					to="/proposals"
 				>
 					<ListItemIcon>
@@ -76,7 +74,6 @@ export default function Navigation({ open, handleDrawerClose }) {
 					button
 					activeClassName="Mui-selected"
 					component={RouterLink}
-					component={RouterLink}
 					to="/users"
 				>
 					<ListItemIcon>
@@ -87,7 +84,6 @@ export default function Navigation({ open, handleDrawerClose }) {
 				<ListItem
 					button
 					activeClassName="Mui-selected"
-					component={RouterLink}
 					component={RouterLink}
 					to="/crypto"
 				>

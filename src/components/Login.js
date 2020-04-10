@@ -17,8 +17,8 @@ import { Provider, useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
 import nacl from "tweetnacl";
-import api from "./api";
-import { useUser } from "./hooks";
+import api from "../api";
+import { useUser } from "../hooks";
 
 const useStyles = makeStyles(theme => ({
 	paper: {

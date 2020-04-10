@@ -8,6 +8,7 @@ function request_middleware({ getState }) {
 		action.request.then(
 			result => {
 				next({ ...action, type: action.type + "_SUCCESS", data: result.data });
+				if (action.onSuccess ) action.onSuccess(result);
 			},
 			err => {
 				next({ ...action, type: action.type + "_FAILURE", error: err });
