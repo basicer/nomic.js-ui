@@ -1,8 +1,4 @@
-import {
-	makeStyles,
-	ThemeProvider,
-	createMuiTheme
-} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 
 const drawerWidth = 240;
 
@@ -85,7 +81,10 @@ const useStyles = makeStyles(theme => ({
 	},
 	fixedHeight: {
 		height: 240
-	}
+	},
+	rightButton: {
+		float: "right"
+	},
 }));
 
 export default useStyles;

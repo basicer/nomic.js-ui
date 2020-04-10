@@ -5,10 +5,10 @@ function reconstruct(x) {
 		if (what.$ref) {
 			if (!resolved[what.$ref]) {
 				let x = {};
-				if (references[what.$ref].$t == "function") {
+				if (references[what.$ref].$t === "function") {
 					x = new Function(references[what.$ref].src);
 				}
-				if (references[what.$ref].proto.$s == "%ArrayPrototype%") {
+				if (references[what.$ref].proto.$s === "%ArrayPrototype%") {
 					x = [];
 				}
 				resolved[what.$ref] = x;
@@ -21,16 +21,16 @@ function reconstruct(x) {
 		if (what.$v) {
 			return what.$v;
 		}
-		if (what.$t == "undefined") return "undefined";
+		if (what.$t === "undefined") return "undefined";
 		else if (what === null) return "null";
-		else if (what.$t == "object") {
+		else if (what.$t === "object") {
 			let p = {};
 			for (let k in what.prop) {
 				p[k] = o(what.prop[k].v);
 			}
 			return p;
 		}
-		if (what.$t == "function") {
+		if (what.$t === "function") {
 			let p = { src: what.src };
 			for (let k in what.prop) {
 				p[k] = o(what.prop[k].v);
@@ -46,11 +46,19 @@ function reconstruct(x) {
 	return o(x.root);
 }
 
-export default function reducer(store = {}, action) {
+const defaultStore = {
+	settings: {
+		base: (window.localStorage.base || "https://nomicjs.basicer.repl.co")
+	}
+};
+
+export default function reducer(store = defaultStore, action) {
 	switch (action.type) {
-		case "initial":
+		case "NEW_SERVER":
+			return {...store, state: {}, data: {}};
+		case "INITIAL_STATE":
 			return { ...store, state: reconstruct(action.data), data: action.data };
-		case "update":
+		case "UPDATE_STATE":
 			let data = store.data;
 			for (let k in action.data) {
 				data.references[k] = action.data[k];
@@ -72,6 +80,9 @@ export default function reducer(store = {}, action) {
 		case "LOGIN_SUCCESS":
 			console.log(action);
 			return { ...store, user: action.user };
+		case "SET_SETTING":
+			return {...store, settings: {...store.settings, [action.key]: action.value}};
+		default:
+			return store;
 	}
-	return store;
 }

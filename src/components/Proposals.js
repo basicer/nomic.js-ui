@@ -2,10 +2,10 @@ import React from "react";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardMedia from "@material-ui/core/CardMedia";
+import { Card, CardHeader, CardMedia, Chip, Paper } from "@material-ui/core";
+import Container from "@material-ui/core/Container";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import Collapse from "@material-ui/core/Collapse";
@@ -19,10 +19,12 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
+import {Add as AddIcon, Done as DoneIcon} from "@material-ui/icons";
+
+import {useUser} from "../hooks";
 
 import Highlight from "react-highlight.js";
-import api from "./api";
+import api from "../api";
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -47,21 +49,24 @@ const useStyles = makeStyles(theme => ({
 	fab: {
 		position: "fixed",
 		bottom: theme.spacing(2),
-		right: theme.spacing(2)
+		right: theme.spacing(4),
+	},
+	bar: {
+		display: 'flex',
+		flexWrap: 'wrap',
+		padding: theme.spacing(0.5),
+	},
+	chip: {
+		margin: theme.spacing(0.5),
 	}
 }));
-
-function wait(n) {
-	return new Promise((res, rej) => {
-		setTimeout(res, n);
-	});
-}
 
 function Proposal({ name, data }) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
 
-	const [expanded, setExpanded] = React.useState(true);
+
+	const [expanded, setExpanded] = React.useState(data.status !== "passed");
 
 	const handleExpandClick = () => {
 		setExpanded(!expanded);
@@ -73,7 +78,7 @@ function Proposal({ name, data }) {
 				avatar={
 					<Avatar
 						aria-label="recipe"
-						className={data.status != "passed" ? classes.red : classes.green}
+						className={data.status !== "passed" ? classes.red : classes.green}
 					>
 						{name}
 					</Avatar>
@@ -89,10 +94,20 @@ function Proposal({ name, data }) {
 			<Collapse in={expanded} timeout="auto" unmountOnExit>
 				<CardContent>
 					<Typography variant="body2" color="textSecondary" component="p">
-						<strong>Votes: </strong>
-						<span>{data.votes.join(", ")}</span>
-						<br />
-						<strong>Code: </strong>
+						
+						<Paper variant="outlined" className={classes.bar}>
+						<strong className={classes.chip}>Votes:</strong>
+						{data.votes.map(x => <Chip
+							className={classes.chip}
+							clickable
+							size="small"
+							avatar={<Avatar>{x.substr(0,1)}</Avatar>}
+							color="primary"
+							label={x}
+							onDelete={() => false}
+							deleteIcon={<DoneIcon />}
+						/>)}
+						</Paper>
 						<Highlight>{data.code}</Highlight>
 					</Typography>
 				</CardContent>
@@ -131,20 +146,27 @@ export default function Proposals() {
 	const classes = useStyles();
 
 	const data = useSelector(store => store.state && store.state.proposals);
+	const history = useHistory();
+	const user = useUser();
 
 	let result = [];
 	for (let k in data) {
 		result.push(<Proposal key={k} name={k} data={data[k]} />);
 	}
-	if (result.length == 0) {
+	if (result.length === 0) {
 		result.push(<h1 key={0}>None yet...</h1>);
 	}
 	return (
 		<React.Fragment>
-			<Fab color="primary" aria-label="add" className={classes.fab}>
+			<Container>
+			{result.reverse()}
+			{ user && (
+			<Fab color="primary" aria-label="add" className={classes.fab} onClick={() => history.push('/proposals/new')}>
 				<AddIcon />
 			</Fab>
-			{result}
+			)}
+			</Container>
+			
 		</React.Fragment>
 	);
 }
