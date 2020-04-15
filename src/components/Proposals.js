@@ -10,6 +10,8 @@ import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import Collapse from "@material-ui/core/Collapse";
 import Avatar from "@material-ui/core/Avatar";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import { red, green } from "@material-ui/core/colors";
@@ -71,6 +73,17 @@ function Proposal({ name, data }) {
 		setExpanded(!expanded);
 	};
 
+	const [anchorEl, setAnchorEl] = React.useState(null);
+
+	const handleClick = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
+
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
+
+
 	return (
 		<Card className={classes.root}>
 			<CardHeader
@@ -83,13 +96,27 @@ function Proposal({ name, data }) {
 					</Avatar>
 				}
 				action={
-					<IconButton aria-label="settings">
+					<IconButton aria-label="settings" onClick={handleClick}>
 						<MoreVertIcon />
 					</IconButton>
 				}
 				title={`Proposal #${name}`}
 				subheader={`by ${data.author} at ${new Date(data.created).toString()}`}
 			/>
+			<Menu
+				anchorEl={anchorEl}
+				keepMounted
+				open={Boolean(anchorEl)}
+				onClose={handleClose}
+			>
+				<MenuItem onClick={() => {
+					dispatch({
+						type: "VOTE",
+						request: api.post("/vote", { id: parseInt(name) })
+					});
+					handleClose();
+				}}>Vote Up</MenuItem>
+			</Menu>
 			<Collapse in={expanded} timeout="auto" unmountOnExit>
 				<CardContent>
 					<Typography variant="body2" color="textSecondary" component="p">
@@ -117,16 +144,18 @@ function Proposal({ name, data }) {
 					aria-label="vote up"
 					onClick={() => {
 						dispatch({
-							type: "USERS",
+							type: "VOTE",
 							request: api.post("/vote", { id: parseInt(name) })
 						});
 					}}
 				>
 					<ThumbUpIcon />
 				</IconButton>
+				{/*
 				<IconButton aria-label="share">
 					<ShareIcon />
 				</IconButton>
+				*/}
 				<IconButton
 					className={clsx(classes.expand, {
 						[classes.expandOpen]: expanded

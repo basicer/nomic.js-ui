@@ -65,7 +65,7 @@ export default function Inspect() {
 	let filter = o => {
 		let r = Object.assign({}, o);
 		for (let k in r) {
-			if (typeof window[k] !== "undefined") delete r[k];
+			if (typeof window[k] !== "undefined" || k === "global") delete r[k];
 		}
 		return r;
 	};

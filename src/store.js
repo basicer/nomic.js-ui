@@ -22,12 +22,14 @@ function request_middleware({ getState }) {
 	};
 }
 
+let mw = [applyMiddleware(request_middleware)];
+
+if ( window.__REDUX_DEVTOOLS_EXTENSION__ ) mw.push(window.__REDUX_DEVTOOLS_EXTENSION__());
+
 const store = createStore(
 	reducer,
-	compose(
-		applyMiddleware(request_middleware),
-		window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-	)
+	undefined,
+	compose.apply(undefined, mw)
 );
 
 export default store;

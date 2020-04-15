@@ -27,6 +27,8 @@ import DashboardIcon from "@material-ui/icons/Dashboard";
 import PeopleIcon from "@material-ui/icons/People";
 //import BarChartIcon from "@material-ui/icons/BarChart";
 import LayersIcon from "@material-ui/icons/Layers";
+import DescriptionIcon from '@material-ui/icons/Description';
+
 //import AssignmentIcon from "@material-ui/icons/Assignment";
 
 export default function Navigation({ open, handleDrawerClose }) {
@@ -52,6 +54,18 @@ export default function Navigation({ open, handleDrawerClose }) {
 					activeClassName="Mui-selected"
 					component={RouterLink}
 					to="/"
+				>
+					<ListItemIcon>
+						<DescriptionIcon />
+					</ListItemIcon>
+					<ListItemText primary="Banner" />
+				</ListItem>
+				<ListItem
+					exact
+					button
+					activeClassName="Mui-selected"
+					component={RouterLink}
+					to="/inspect"
 				>
 					<ListItemIcon>
 						<DashboardIcon />
