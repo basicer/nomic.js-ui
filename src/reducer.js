@@ -56,6 +56,8 @@ export default function reducer(store = defaultStore, action) {
 	switch (action.type) {
 		case "NEW_SERVER":
 			return { ...store, state: {}, data: {} };
+		case "CONNECTION_STATE":
+			return { ...store, connection: action.value };
 		case "INITIAL_STATE":
 			return { ...store, state: reconstruct(action.data), data: action.data };
 		case "UPDATE_STATE":

@@ -7,10 +7,13 @@ import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Switch, useHistory } from "react-router-dom";
 import { NavLink as RouterLink } from "react-router-dom";
 
+import { blue, pink } from "@material-ui/core/colors";
+
 import clsx from "clsx";
 import {
 	makeStyles,
 	ThemeProvider,
+	darken,
 	createMuiTheme
 } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -30,6 +33,8 @@ import ToggleSwitch from "@material-ui/core/Switch";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
+import Dialog from "@material-ui/core/Dialog";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import TextField from "@material-ui/core/TextField";
 //import Paper from "@material-ui/core/Paper";
 //import Link from "@material-ui/core/Link";
@@ -61,6 +66,7 @@ import Inspect from "./components/Inspect";
 import Login from "./components/Login";
 import Navigation from "./components/Navigation";
 import SettingsDialog from "./components/SettingsDialog";
+import Banner from "./components/Banner";
 
 import useStyles from "./styles";
 
@@ -78,7 +84,12 @@ function EventConnector() {
 		let base = settings.base;
 		let events = new EventSource(base + "/event-stream");
 		window.es = events;
-		events.onopen = () => console.log("Open");
+		events.onopen = () => {
+			dispatch({ type: "CONNECTION_STATE", value: 'connected' });
+		};
+		events.onerror = () => {
+			dispatch({ type: "CONNECTION_STATE", value: 'disconnected' });
+		};
 		dispatch({ type: "NEW_SERVER" });
 		events.addEventListener("initial", function(e) {
 			dispatch({ type: "INITIAL_STATE", data: JSON.parse(e.data) });
@@ -126,6 +137,10 @@ function MySnackBar() {
 
 function Header({ open, handleDrawerOpen }) {
 	const history = useHistory();
+	if ( localStorage.redirect ) {
+		history.replace(localStorage.redirect);
+		delete localStorage.redirect;
+	}
 	const classes = useStyles();
 	const user = useUser();
 
@@ -190,9 +205,10 @@ function Header({ open, handleDrawerOpen }) {
 export default function App() {
 	const classes = useStyles();
 	const dispatch = useDispatch();
+	const data = useSelector(store => store.state && store.state.proposals);
 	const isDark = useMediaQuery("(prefers-color-scheme: dark)");
-	const themeType = useSelector(store => store.theme);
-	if (!themeType) dispatch({ type: "THEME", theme: isDark ? "light" : "dark" });
+	const paletteType = useSelector(store => store.theme);
+	if (!paletteType) dispatch({ type: "THEME", theme: isDark ? "light" : "dark" });
 
 	const [open, setOpen] = React.useState(true);
 
@@ -204,12 +220,32 @@ export default function App() {
 	const handleDrawerClose = () => {
 		setOpen(false);
 	};
-	const theme = createMuiTheme({
-		palette: {
-			//type:
-			type: themeType
-		}
-	});
+	const theme = React.useMemo(() => {
+		const nextTheme = createMuiTheme(
+			{
+				palette: {
+					primary: {
+						main: paletteType === 'light' ? blue[700] : blue[200],
+					},
+					secondary: {
+						main: paletteType === 'light' ? darken(pink.A400, 0.1) : pink[200],
+					},
+					type: paletteType,
+					background: {
+						//default: paletteType === 'light' ? '#fff' : '#121212',
+					},
+				},
+			},
+		);
+
+		//nextTheme.palette.background.level2 =
+		//	paletteType === 'light' ? nextTheme.palette.grey[100] : '#333';
+
+		//nextTheme.palette.background.level1 =
+		//	paletteType === 'light' ? '#fff' : nextTheme.palette.grey[900];
+
+		return nextTheme;
+	}, [paletteType]);
 
 	return (
 		<>
@@ -235,6 +271,9 @@ export default function App() {
 										<Users />
 									</Route>
 									<Route exact path="/">
+										<Banner />
+									</Route>
+									<Route exact path="/inspect">
 										<Inspect />
 									</Route>
 									<Route exact path="/login">
@@ -252,6 +291,14 @@ export default function App() {
 							</Container>
 						</main>
 					</div>
+					<Dialog
+						maxWidth="xs"
+						open={!data}
+						keepMounted
+						PaperComponent={"div"}
+					>
+						<CircularProgress size="200px" />
+					</Dialog>
 					<MySnackBar />
 				</ThemeProvider>
 			</BrowserRouter>

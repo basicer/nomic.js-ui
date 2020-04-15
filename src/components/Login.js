@@ -42,14 +42,18 @@ const useStyles = makeStyles(theme => ({
 
 export default function SignIn() {
 	const classes = useStyles();
-	const [state, setState] = React.useState({ key: "", user: "" });
+	const [state, setState] = React.useState({ 
+		key: localStorage.secretKey || "",
+		user: localStorage.user || "",
+		remember: false 
+	});
 	const dispatch = useDispatch();
 	const currentUser = useUser();
 	const history = useHistory();
 
 	React.useEffect(() => {
 		if (currentUser) history.push("/profile");
-	}, [currentUser]);
+	}, [currentUser, history]);
 
 	const store = useSelector(store => store.state);
 	let users = [];
@@ -65,6 +69,9 @@ export default function SignIn() {
 		if (!event) return;
 		setState({ ...state, user: value });
 	};
+
+	if (!store || !store.users) return <></>;
+
 	let userError;
 	if (state.user.length > 0 && !store.users[state.user]) {
 		userError = "Invalid User";
@@ -97,6 +104,10 @@ export default function SignIn() {
 			console.log("SIG", Buffer.from(sig).toString("base64"));
 			api.setAuth(state.user, Buffer.from(sig).toString("base64"));
 			dispatch({ type: "LOGIN", user: state.user, request: api.get("/login") });
+			if (state.remember) {
+				localStorage.user = state.user;
+				localStorage.secretKey = Buffer.from(o.secretKey).toString("base64");
+			}
 		}
 	}
 
@@ -111,7 +122,7 @@ export default function SignIn() {
 				</Typography>
 				<form
 					className={classes.form}
-					autocomplete="off"
+					autoComplete="off"
 					onSubmit={e => e.preventDefault()}
 				>
 					<Autocomplete
@@ -134,7 +145,6 @@ export default function SignIn() {
 								error={!!userError}
 								helperText={userError}
 								autoComplete="off"
-								autoFocus
 							/>
 						)}
 					/>
@@ -154,7 +164,7 @@ export default function SignIn() {
 						value={state.key}
 					/>
 					<FormControlLabel
-						control={<Checkbox value="remember" color="primary" />}
+						control={<Checkbox value="remember" color="primary" checked={state.remember} onClick={() => setState({...state, remember: !state.remember})} />}
 						label="Remember me"
 					/>
 					<Button
