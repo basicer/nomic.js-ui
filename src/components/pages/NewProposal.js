@@ -1,7 +1,7 @@
 import React from "react";
 import { Typography, Divider, Button } from "@material-ui/core";
 import { Send as SendIcon } from "@material-ui/icons";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 
 import AceEditor from "react-ace";
@@ -10,7 +10,7 @@ import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-monokai";
 
-import api from "../api";
+import api from "../../api";
 
 import { makeStyles } from "@material-ui/core/styles";
 

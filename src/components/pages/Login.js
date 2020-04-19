@@ -1,24 +1,23 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
+
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
+
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { Provider, useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useGamestate, useUser } from "../../hooks";
 import { useHistory } from "react-router-dom";
 
 import nacl from "tweetnacl";
-import api from "../api";
-import { useUser } from "../hooks";
+import api from "../../api";
+
 
 const useStyles = makeStyles(theme => ({
 	paper: {
@@ -52,12 +51,12 @@ export default function SignIn() {
 	const history = useHistory();
 
 	React.useEffect(() => {
-		if (currentUser) history.push("/profile");
+		if (currentUser) history.push(`/users/${currentUser.name}`);
 	}, [currentUser, history]);
 
-	const store = useSelector(store => store.state);
+	const gameState = useGamestate().state;
 	let users = [];
-	for (let u in store ? store.users : {}) {
+	for (let u in gameState ? gameState.users : {}) {
 		users.push({ title: u });
 	}
 
@@ -70,43 +69,34 @@ export default function SignIn() {
 		setState({ ...state, user: value });
 	};
 
-	if (!store || !store.users) return <></>;
+	if (!gameState || !gameState.users) return <></>;
 
 	let userError;
-	if (state.user.length > 0 && !store.users[state.user]) {
+	if (state.user.length > 0 && !gameState.users[state.user]) {
 		userError = "Invalid User";
 	}
 
-	let h = Buffer.from(nacl.hash(Buffer.from(state.key, "utf8")));
-	let o = nacl.sign.keyPair.fromSeed(h.slice(0, 32));
+	let o = require('../../crypto').deriveKey(state.key);
 
-	try {
-		let s = Buffer.from(state.key, "base64");
-		if (s.length === 64) {
-			h = s;
-			o = nacl.sign.keyPair.fromSecretKey(s);
-		}
-	} catch (e) {}
-
-	let pkey = Buffer.from(o.publicKey).toString("base64");
+	let pkey = o.public.toString("base64");
 	let keyError;
 
-	let user = store && store.users && store.users[state.user];
-	if (state.key.length > 0 && user && pkey !== user.key) {
+	let user = gameState && gameState.users && gameState.users[state.user];
+	console.log("Seeking", pkey);
+	if (state.key.length > 0 && user && pkey !== require('../../crypto').isolateKey(user.key)) {
 		keyError = "Incorrect Key";
 	}
 	let okay = user && state.key.length > 0 && !keyError;
 
 	function login() {
-		console.log(o.secretKey);
 		if (okay) {
-			let sig = nacl.sign(new Uint8Array(1), o.secretKey);
+			let sig = nacl.sign(new Uint8Array(1), o.secret);
 			console.log("SIG", Buffer.from(sig).toString("base64"));
 			api.setAuth(state.user, Buffer.from(sig).toString("base64"));
 			dispatch({ type: "LOGIN", user: state.user, request: api.get("/login") });
 			if (state.remember) {
 				localStorage.user = state.user;
-				localStorage.secretKey = Buffer.from(o.secretKey).toString("base64");
+				localStorage.secretKey = Buffer.from(o.secret).toString("base64");
 			}
 		}
 	}
@@ -125,6 +115,7 @@ export default function SignIn() {
 					autoComplete="off"
 					onSubmit={e => e.preventDefault()}
 				>
+					{o.type}
 					<Autocomplete
 						id="combo-box-demo"
 						options={users}

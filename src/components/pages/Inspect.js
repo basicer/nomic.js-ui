@@ -1,15 +1,21 @@
 import React from "react";
-import Paper from "@material-ui/core/Paper";
-
-//import TreeView from "@material-ui/lab/TreeView";
-//import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-//import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-//import TreeItem from "@material-ui/lab/TreeItem";
-
+import {Tabs, Tab, Paper} from "../../material";
 import { ObjectInspector, ObjectLabel, ObjectRootLabel } from "react-inspector";
-
-import { shallowEqual, useSelector } from "react-redux";
+import { useGamestate } from "../../hooks";
+import { makeStyles } from "@material-ui/core/styles";
 import Highlight from "react-highlight.js";
+import { Typography } from "@material-ui/core";
+import { useSelector } from "react-redux";
+
+function TabPanel({value, index, children}) {
+	return <Typography hidden={value!==index}>{children}</Typography>
+}
+
+const useStyles = makeStyles(theme => ({
+	padded: {
+		padding: theme.spacing(2)
+	}
+}));
 
 class ErrorBoundary extends React.Component {
 	constructor(props) {
@@ -39,9 +45,12 @@ class ErrorBoundary extends React.Component {
 	}
 }
 
+let MasonView = React.lazy(() => import("../MasonView"));
+
 export default function Inspect() {
-	const data = useSelector(store => store.state);
+	const {state, data} = useGamestate();
 	const myTheme = useSelector(store => store.theme);
+	const classes = useStyles();
 	const theme = myTheme === "dark" ? "chromeDark" : "chromeLight";
 
 	const nodeRenderer = ({ depth, name, data, isNonenumerable, expanded }) => {
@@ -70,27 +79,33 @@ export default function Inspect() {
 		return r;
 	};
 
-	let filtered = filter(data);
+	let filtered = filter(state);
+	let [value, handleChange] = React.useState(1);
+
+	
 
 	return (
 		<Paper>
-			<ErrorBoundary>
+			<Tabs
+				value={value}
+				indicatorColor="primary"
+				textColor="primary"
+				onChange={(e,n) => handleChange(n)}
+			>
+			<Tab label="Tree" value={0} />
+			<Tab label="MasonView" value={1} />
+			</Tabs>
+			<TabPanel value={value} index={0} className={classes.padded}>
 				<ObjectInspector
 					data={filtered}
 					theme={theme}
-					expandLevel={3}
-					nodeRenderer={nodeRenderer}
+ 					expandLevel={3}
+ 					nodeRenderer={nodeRenderer}
 				/>
-				{/*
-    <TreeView
-      defaultCollapseIcon={<ExpandMoreIcon />}
-      defaultExpanded={['']}
-      defaultExpandIcon={<ChevronRightIcon />}
-    >
-      {renderTree(data, 'root', '')}
-    </TreeView>
-	*/}
-			</ErrorBoundary>
+			</TabPanel>
+			<TabPanel value={value} index={1}>
+				<MasonView data={data} />
+			</TabPanel>
 		</Paper>
 	);
 }

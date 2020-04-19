@@ -18,15 +18,18 @@ import { red, green } from "@material-ui/core/colors";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import ShareIcon from "@material-ui/icons/Share";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import Fab from "@material-ui/core/Fab";
 import { Add as AddIcon, Done as DoneIcon } from "@material-ui/icons";
 
-import { useUser } from "../hooks";
+import DotButton from "../DotButton";
+
+import { useUser, useGamestate } from "../../hooks";
+import Moment from 'react-moment';
+
 
 import Highlight from "react-highlight.js";
-import api from "../api";
+import api from "../../api";
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -63,9 +66,12 @@ const useStyles = makeStyles(theme => ({
 	}
 }));
 
+
+
 function Proposal({ name, data }) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
+	const history = useHistory();
 
 	const [expanded, setExpanded] = React.useState(data.status !== "passed");
 
@@ -73,16 +79,13 @@ function Proposal({ name, data }) {
 		setExpanded(!expanded);
 	};
 
-	const [anchorEl, setAnchorEl] = React.useState(null);
-
-	const handleClick = (event) => {
-		setAnchorEl(event.currentTarget);
-	};
-
-	const handleClose = () => {
-		setAnchorEl(null);
-	};
-
+	let actions = {
+		"Vote Up": () => dispatch({
+			type: "VOTE",
+			request: api.post("/vote", { id: parseInt(name) })
+		}),
+		"Inspect": () => history.push("/inspect?q=proposals[" + name + "]")
+	}
 
 	return (
 		<Card className={classes.root}>
@@ -96,27 +99,12 @@ function Proposal({ name, data }) {
 					</Avatar>
 				}
 				action={
-					<IconButton aria-label="settings" onClick={handleClick}>
-						<MoreVertIcon />
-					</IconButton>
+					<DotButton actions={actions} />
 				}
 				title={`Proposal #${name}`}
-				subheader={`by ${data.author} at ${new Date(data.created).toString()}`}
+				subheader={<span>by {data.author} <Moment fromNow title date={new Date(data.created)} /></span>}
 			/>
-			<Menu
-				anchorEl={anchorEl}
-				keepMounted
-				open={Boolean(anchorEl)}
-				onClose={handleClose}
-			>
-				<MenuItem onClick={() => {
-					dispatch({
-						type: "VOTE",
-						request: api.post("/vote", { id: parseInt(name) })
-					});
-					handleClose();
-				}}>Vote Up</MenuItem>
-			</Menu>
+
 			<Collapse in={expanded} timeout="auto" unmountOnExit>
 				<CardContent>
 					<Typography variant="body2" color="textSecondary" component="p">
@@ -174,7 +162,8 @@ function Proposal({ name, data }) {
 export default function Proposals() {
 	const classes = useStyles();
 
-	const data = useSelector(store => store.state && store.state.proposals);
+	const {state} = useGamestate()
+	const data = state && state.proposals;
 	const history = useHistory();
 	const user = useUser();
 

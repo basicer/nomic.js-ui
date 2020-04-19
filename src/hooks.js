@@ -7,3 +7,9 @@ export function useUser() {
 	if (!user) return;
 	return Object.assign({ name: user }, state.users[user]);
 }
+
+export function useGamestate() {
+	let state = useSelector(store => store.state);
+	let data = useSelector(store => store.data);
+	return {state, data};
+}

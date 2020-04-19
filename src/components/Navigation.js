@@ -2,22 +2,18 @@ import React from "react";
 import Drawer from "@material-ui/core/Drawer";
 import clsx from "clsx";
 
-import useStyles from "../styles";
+import styles from "../styles";
 
-//import List from "@material-ui/core/List";
-//import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
-//import Container from "@material-ui/core/Container";
-//import Grid from "@material-ui/core/Grid";
+
+import { makeStyles } from "@material-ui/core/styles";
 
 import { NavLink as RouterLink } from "react-router-dom";
+import { ListItem, ListItemIcon, ListItemText } from "../material";
 
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
 //import ListSubheader from "@material-ui/core/ListSubheader";
 
 //import MenuIcon from "@material-ui/icons/Menu";
@@ -31,8 +27,17 @@ import DescriptionIcon from '@material-ui/icons/Description';
 
 //import AssignmentIcon from "@material-ui/icons/Assignment";
 
+const useStyles = makeStyles(styles);
+
 export default function Navigation({ open, handleDrawerClose }) {
 	const classes = useStyles();
+	let links = [
+		["Banner", "/", <DescriptionIcon />, {exact: true}],
+		["Inspect", "/inspect", <DashboardIcon />],
+		["Proposals", "/proposals", <ListIcon />],
+		["Users", "/users", <PeopleIcon />],
+		["Crypto", "/crypto", <LayersIcon />]
+	];
 	return (
 		<Drawer
 			variant="permanent"
@@ -48,63 +53,23 @@ export default function Navigation({ open, handleDrawerClose }) {
 			</div>
 			<Divider />
 			<div>
-				<ListItem
-					exact
-					button
-					activeClassName="Mui-selected"
-					component={RouterLink}
-					to="/"
-				>
-					<ListItemIcon>
-						<DescriptionIcon />
-					</ListItemIcon>
-					<ListItemText primary="Banner" />
-				</ListItem>
-				<ListItem
-					exact
-					button
-					activeClassName="Mui-selected"
-					component={RouterLink}
-					to="/inspect"
-				>
-					<ListItemIcon>
-						<DashboardIcon />
-					</ListItemIcon>
-					<ListItemText primary="Inspect" />
-				</ListItem>
-				<ListItem
-					button
-					activeClassName="Mui-selected"
-					component={RouterLink}
-					to="/proposals"
-				>
-					<ListItemIcon>
-						<ListIcon />
-					</ListItemIcon>
-					<ListItemText primary="Proposals" />
-				</ListItem>
-				<ListItem
-					button
-					activeClassName="Mui-selected"
-					component={RouterLink}
-					to="/users"
-				>
-					<ListItemIcon>
-						<PeopleIcon />
-					</ListItemIcon>
-					<ListItemText primary="Users" />
-				</ListItem>
-				<ListItem
-					button
-					activeClassName="Mui-selected"
-					component={RouterLink}
-					to="/crypto"
-				>
-					<ListItemIcon>
-						<LayersIcon />
-					</ListItemIcon>
-					<ListItemText primary="Crypto" />
-				</ListItem>
+				{
+					links.map(([name, url, icon, extra={}]) =>
+						<ListItem
+							{...extra}
+							button
+							activeClassName="Mui-selected"
+							component={RouterLink}
+							key={name}
+							to={url}
+						>
+							<ListItemIcon>
+								{icon}
+							</ListItemIcon>
+							<ListItemText primary={name} />
+						</ListItem>
+					)
+				}
 			</div>
 		</Drawer>
 	);

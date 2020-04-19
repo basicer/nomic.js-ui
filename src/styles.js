@@ -1,8 +1,6 @@
-import { makeStyles } from "@material-ui/core/styles";
-
 const drawerWidth = 240;
 
-const useStyles = makeStyles(theme => ({
+export default theme => ({
 	root: {
 		display: "flex"
 	},
@@ -84,7 +82,9 @@ const useStyles = makeStyles(theme => ({
 	},
 	rightButton: {
 		float: "right"
-	}
-}));
-
-export default useStyles;
+	},
+	backdrop: {
+		zIndex: theme.zIndex.drawer + 1,
+		color: '#fff',
+	},
+});

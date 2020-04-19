@@ -1,7 +1,7 @@
 import logo from "./logo.svg";
 import "./App.css";
 
-import React from "react";
+import React, { Suspense } from "react";
 import ReactDOM from "react-dom";
 
 import { BrowserRouter, Route, Switch, useHistory } from "react-router-dom";
@@ -13,6 +13,7 @@ import clsx from "clsx";
 import {
 	makeStyles,
 	ThemeProvider,
+	useTheme,
 	darken,
 	createMuiTheme
 } from "@material-ui/core/styles";
@@ -21,60 +22,42 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 import Box from "@material-ui/core/Box";
 
-import AppBar from "@material-ui/core/AppBar";
-import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert from "@material-ui/lab/Alert";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import ToggleSwitch from "@material-ui/core/Switch";
-import Button from "@material-ui/core/Button";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
-import Dialog from "@material-ui/core/Dialog";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import TextField from "@material-ui/core/TextField";
-//import Paper from "@material-ui/core/Paper";
-//import Link from "@material-ui/core/Link";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import ListSubheader from "@material-ui/core/ListSubheader";
 
-import MenuIcon from "@material-ui/icons/Menu";
-import SettingsIcon from "@material-ui/icons/Settings";
-import CloseIcon from "@material-ui/icons/Close";
-import ListIcon from "@material-ui/icons/List";
-import WifiIcon from "@material-ui/icons/Wifi";
-
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-//import NotificationsIcon from "@material-ui/icons/Notifications";
-
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 
 import { useDispatch, useSelector } from "react-redux";
 
 //import { mainListItems, secondaryListItems } from './listItems';
 
-import Proposals from "./components/Proposals";
-import NewProposal from "./components/NewProposal";
-import Users from "./components/Users";
-import Inspect from "./components/Inspect";
-import Login from "./components/Login";
+import {
+	Alert, Snackbar, AppBar, Toolbar, IconButton, MenuIcon, Typography, 
+	SettingsIcon, AccountCircleIcon, Container, Grid, Dialog, CircularProgress,
+	Backdrop
+} from "./material"
+
+import NewProposal from "./components/pages/NewProposal";
+import Users from "./components/pages/Users";
+import Inspect from "./components/pages/Inspect";
+import Login from "./components/pages/Login";
 import Navigation from "./components/Navigation";
 import SettingsDialog from "./components/SettingsDialog";
-import Banner from "./components/Banner";
+import Crypto from "./components/pages/Crypto";
+import Profile from "./components/pages/Profile";
 
-import useStyles from "./styles";
+
+
+import styles from "./styles";
 
 import { useUser } from "./hooks";
 import api from "./api";
 
-function Alert(props) {
-	return <MuiAlert elevation={6} variant="filled" {...props} />;
+const Proposals = React.lazy(() => import("./components/pages/Proposals"));
+const Banner = React.lazy(() => import("./components/pages/Banner"));
+
+
+const useStyles = makeStyles(styles);
+
+function MyAlert(props) {
+	return <Alert elevation={6} variant="filled" {...props} />;
 }
 
 function EventConnector() {
@@ -125,12 +108,12 @@ function MySnackBar() {
 			autoHideDuration={4000}
 			onClose={() => dispatch({ type: "CLOSE_SNACKBAR" })}
 		>
-			<Alert
+			<MyAlert
 				onClose={() => dispatch({ type: "CLOSE_SNACKBAR" })}
 				severity={store ? store.severity : "info"}
 			>
 				{store && store.message}
-			</Alert>
+			</MyAlert>
 		</Snackbar>
 	);
 }
@@ -141,7 +124,7 @@ function Header({ open, handleDrawerOpen }) {
 		history.replace(localStorage.redirect);
 		delete localStorage.redirect;
 	}
-	const classes = useStyles();
+	const classes = useStyles();;
 	const user = useUser();
 
 	const [settingsOpen, setSettingsOpen] = React.useState(false);
@@ -210,16 +193,6 @@ export default function App() {
 	const paletteType = useSelector(store => store.theme);
 	if (!paletteType) dispatch({ type: "THEME", theme: isDark ? "light" : "dark" });
 
-	const [open, setOpen] = React.useState(true);
-
-	const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-
-	const handleDrawerOpen = () => {
-		setOpen(true);
-	};
-	const handleDrawerClose = () => {
-		setOpen(false);
-	};
 	const theme = React.useMemo(() => {
 		const nextTheme = createMuiTheme(
 			{
@@ -247,60 +220,56 @@ export default function App() {
 		return nextTheme;
 	}, [paletteType]);
 
+	const [open, setOpen] = React.useState(undefined);
+	const shouldStartClosed = useMediaQuery(theme.breakpoints.up('md'));
+	let amOpen = typeof open === "undefined" ? shouldStartClosed : open;
+
+	const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+
+	const handleDrawerOpen = () => {
+		setOpen(true);
+	};
+	const handleDrawerClose = () => {
+		setOpen(false);
+	};
+
 	return (
 		<>
 			<EventConnector />
 			<ApiConnector />
 			<BrowserRouter>
+				<Suspense fallback={<Backdrop className={classes.backdrop}><CircularProgress size="200px" /></Backdrop>}>
 				<ThemeProvider theme={theme}>
 					<div className={classes.root}>
 						<CssBaseline />
-						<Header open={open} handleDrawerOpen={handleDrawerOpen} />
-						<Navigation open={open} handleDrawerClose={handleDrawerClose} />
+						<Header open={amOpen} handleDrawerOpen={handleDrawerOpen} />
+						<Navigation open={amOpen} handleDrawerClose={handleDrawerClose} />
 						<main className={classes.content}>
 							<div className={classes.appBarSpacer} />
 							<Container maxWidth="lg" className={classes.container}>
 								<Switch>
-									<Route path="/proposals/new">
-										<NewProposal />
-									</Route>
-									<Route path="/proposals">
-										<Proposals />
-									</Route>
-									<Route path="/users">
-										<Users />
-									</Route>
-									<Route exact path="/">
-										<Banner />
-									</Route>
-									<Route exact path="/inspect">
-										<Inspect />
-									</Route>
-									<Route exact path="/login">
-										<Login />
-									</Route>
+									<Route path="/users/:user" component={Profile} />
+									<Route path="/proposals/new" component={NewProposal} />
+									<Route path="/proposals" component={Proposals} />
+									<Route path="/users" component={Users} />
+									<Route exact path="/" component={Banner} />
+									<Route exact path="/inspect" component={Inspect} />
+									<Route exact path="/login" component={Login} />
+									<Route exact path="/crypto" component={Crypto} />
+									
 								</Switch>
-								<Grid container spacing={3}>
-									{/* Chart */}
-									<div />
-									{/* Recent Deposits */}
-									<div />
-									{/* Recent Orders */}
-									<div />
-								</Grid>
 							</Container>
 						</main>
 					</div>
-					<Dialog
-						maxWidth="xs"
+					<Backdrop
 						open={!data}
-						keepMounted
-						PaperComponent={"div"}
+						className={classes.backdrop}
 					>
 						<CircularProgress size="200px" />
-					</Dialog>
+					</Backdrop>
 					<MySnackBar />
 				</ThemeProvider>
+				</Suspense>
 			</BrowserRouter>
 		</>
 	);

@@ -16,6 +16,12 @@ import { red } from "@material-ui/core/colors";
 //import ShareIcon from "@material-ui/icons/Share";
 //import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import Moment from 'react-moment';
+
+import { useHistory } from "react-router-dom";
+import { useGamestate } from "../../hooks";
+
+import DotButton from "../DotButton";
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -29,22 +35,22 @@ const useStyles = makeStyles(theme => ({
 function User({ name, data }) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
+	const history = useHistory();
+
+	let actions = {
+		"Profile": () => history.push(`/users/${name}`)
+	};
 
 	return (
 		<Card className={classes.root}>
 			<CardHeader
 				avatar={<Avatar className={classes.avatar}></Avatar>}
 				action={
-					<IconButton
-						aria-label="settings"
-						onClick={() => dispatch({ type: "blah" })}
-					>
-						<MoreVertIcon />
-					</IconButton>
+					<DotButton actions={actions} />
 				}
 				title={name}
 				titleTypographyProps={{ variant: "h5" }}
-				subheader=""
+				subheader={data.lastSeen ? (<span>Last seen <Moment withTitle fromNow date={new Date(data.lastSeen)} /></span>) : ""}
 			/>
 			<CardContent>
 				<Typography variant="body2" color="textSecondary" component="p">
@@ -56,7 +62,8 @@ function User({ name, data }) {
 }
 
 export default function Users() {
-	const data = useSelector(store => store.state && store.state.users);
+	const {state} = useGamestate();
+	const data = state && state.users;
 
 	let result = [];
 	for (let k in data) {
