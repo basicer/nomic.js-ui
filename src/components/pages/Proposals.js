@@ -10,8 +10,6 @@ import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import Collapse from "@material-ui/core/Collapse";
 import Avatar from "@material-ui/core/Avatar";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import { red, green } from "@material-ui/core/colors";
@@ -21,15 +19,16 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import Fab from "@material-ui/core/Fab";
 import { Add as AddIcon, Done as DoneIcon } from "@material-ui/icons";
+import { If } from "../helpers";
 
 import DotButton from "../DotButton";
 
-import { useUser, useGamestate } from "../../hooks";
+import { useUser, useGamestate, useAPI } from "../../hooks";
 import Moment from 'react-moment';
 
 
 import Highlight from "react-highlight.js";
-import api from "../../api";
+
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -68,12 +67,13 @@ const useStyles = makeStyles(theme => ({
 
 
 
-function Proposal({ name, data }) {
+function Proposal({ name, data, startExpanded=false }) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
 	const history = useHistory();
+	const api = useAPI();
 
-	const [expanded, setExpanded] = React.useState(data.status !== "passed");
+	const [expanded, setExpanded] = React.useState(data.status !== "passed" || startExpanded);
 
 	const handleExpandClick = () => {
 		setExpanded(!expanded);
@@ -128,6 +128,7 @@ function Proposal({ name, data }) {
 				</CardContent>
 			</Collapse>
 			<CardActions disableSpacing>
+				<If check={data.status !== "passed"}>
 				<IconButton
 					aria-label="vote up"
 					onClick={() => {
@@ -139,6 +140,7 @@ function Proposal({ name, data }) {
 				>
 					<ThumbUpIcon />
 				</IconButton>
+				</If>
 				{/*
 				<IconButton aria-label="share">
 					<ShareIcon />
@@ -169,7 +171,7 @@ export default function Proposals() {
 
 	let result = [];
 	for (let k in data) {
-		result.push(<Proposal key={k} name={k} data={data[k]} />);
+		result.push(<Proposal key={k} name={k} data={data[k]} startExpanded={k == data.length - 1} />);
 	}
 	if (result.length === 0) {
 		result.push(<h1 key={0}>None yet...</h1>);
@@ -178,7 +180,7 @@ export default function Proposals() {
 		<React.Fragment>
 			<Container>
 				{result.reverse()}
-				{user && (
+				<If check={!!user}>
 					<Fab
 						color="primary"
 						aria-label="add"
@@ -187,7 +189,7 @@ export default function Proposals() {
 					>
 						<AddIcon />
 					</Fab>
-				)}
+				</If>
 			</Container>
 		</React.Fragment>
 	);

@@ -80,13 +80,26 @@ export default function reducer(store = defaultStore, action) {
 		case "THEME":
 			return { ...store, theme: action.theme };
 		case "LOGIN_SUCCESS":
-			console.log(action);
 			return { ...store, user: action.user };
+		case "LOG_OUT":
+			delete localStorage.secretKey;
+			delete localStorage.user;
+			return { ...store, user: undefined };
 		case "SET_SETTING":
 			return {
 				...store,
 				settings: { ...store.settings, [action.key]: action.value }
 			};
+		case "TOGGLE_SIMULATOR":
+			if ( store.simulator ) {
+				return {...store, simulator: undefined}
+			} else {
+				let copy = JSON.parse(JSON.stringify(store.data));
+				return {...store, simulator: {
+					data: copy, 
+					state: reconstruct(copy)
+				}};
+			}
 		default:
 			return store;
 	}

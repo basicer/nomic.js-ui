@@ -10,8 +10,7 @@ import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-monokai";
 
-import api from "../../api";
-
+import { useAPI } from "../../hooks";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
@@ -21,14 +20,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function NewProposal() {
-	let dispatch = useDispatch();
-	let history = useHistory();
+	const dispatch = useDispatch();
+	const history = useHistory();
+	const api = useAPI();
 	let [code, setCode] = React.useState("");
 	let classes = useStyles();
-	const options = {
-		selectOnLineNumbers: true,
-		fontSize: 14
-	};
+
 
 	function sendProposal() {
 		dispatch({
@@ -68,7 +65,7 @@ export default function NewProposal() {
 				width="100%"
 				height="500px"
 				fontSize={14}
-				name="UNIQUE_ID_OF_DIV"
+				name="new-proposal-ace"
 				editorProps={{ $blockScrolling: true }}
 			/>
 		</>

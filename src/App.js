@@ -2,12 +2,11 @@ import logo from "./logo.svg";
 import "./App.css";
 
 import React, { Suspense } from "react";
-import ReactDOM from "react-dom";
 
 import { BrowserRouter, Route, Switch, useHistory } from "react-router-dom";
-import { NavLink as RouterLink } from "react-router-dom";
 
 import { blue, pink } from "@material-ui/core/colors";
+import { If } from "./components/helpers";
 
 import clsx from "clsx";
 import {
@@ -20,18 +19,13 @@ import {
 import CssBaseline from "@material-ui/core/CssBaseline";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
-import Box from "@material-ui/core/Box";
-
-
-
 import { useDispatch, useSelector } from "react-redux";
-
-//import { mainListItems, secondaryListItems } from './listItems';
 
 import {
 	Alert, Snackbar, AppBar, Toolbar, IconButton, MenuIcon, Typography, 
 	SettingsIcon, AccountCircleIcon, Container, Grid, Dialog, CircularProgress,
-	Backdrop
+	Backdrop, Badge, NotificationsIcon, Menu, MenuItem, MenuList, ListItemIcon,
+	LockIcon
 } from "./material"
 
 import NewProposal from "./components/pages/NewProposal";
@@ -47,8 +41,8 @@ import Profile from "./components/pages/Profile";
 
 import styles from "./styles";
 
-import { useUser } from "./hooks";
-import api from "./api";
+import { useUser, useAPI } from "./hooks";
+import { Button } from "@material-ui/core";
 
 const Proposals = React.lazy(() => import("./components/pages/Proposals"));
 const Banner = React.lazy(() => import("./components/pages/Banner"));
@@ -92,6 +86,7 @@ function EventConnector() {
 
 function ApiConnector() {
 	let store = useSelector(store => store.settings);
+	let api = useAPI();
 	React.useEffect(() => {
 		console.log("Base", store.base);
 		api.setBase(store.base);
@@ -118,6 +113,74 @@ function MySnackBar() {
 	);
 }
 
+function UserButton() {
+	const user = useUser();
+	const history = useHistory();
+	const dispatch = useDispatch();
+	
+	const [anchorEl, setAnchorEl] = React.useState(null);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+	let actions = [
+		[AccountCircleIcon , 'Profile', () => history.push('/users/' + user.name)],
+		[LockIcon, 'Log Out', () => dispatch({type: 'LOG_OUT'})],
+	]
+	
+	if (!user) {
+		return (
+			<Button  onClick={() => history.push("/login")} variant="contained" color="default">
+				Login
+			</Button>
+		)
+	}
+
+	return (
+		<>
+		<Button
+			color="default"
+			variant="contained"
+			aria-haspopup="true"
+			startIcon={<AccountCircleIcon />}
+			onClick={handleClick}
+		>
+			{user.name}
+		</Button>
+		<Menu
+			getContentAnchorEl={null}
+			anchorEl={anchorEl}
+			open={!!anchorEl}
+			onClose={handleClose}
+			anchorOrigin={{
+				vertical: 'bottom',
+				horizontal: 'left',
+			}}
+			transformOrigin={{
+				vertical: 'top',
+				horizontal: 'left',
+			}}
+		>
+			{actions.map(([Icon, name, action]) => <MenuItem onClick={() => {
+				action();
+				handleClose();
+			}}>
+				<ListItemIcon>
+            		<Icon />
+          		</ListItemIcon>
+				{name}
+			</MenuItem>)}
+		</Menu></>
+	);
+
+}
+
+
+
 function Header({ open, handleDrawerOpen }) {
 	const history = useHistory();
 	if ( localStorage.redirect ) {
@@ -125,7 +188,6 @@ function Header({ open, handleDrawerOpen }) {
 		delete localStorage.redirect;
 	}
 	const classes = useStyles();;
-	const user = useUser();
 
 	const [settingsOpen, setSettingsOpen] = React.useState(false);
 	const handleClickOpen = () => {
@@ -160,21 +222,18 @@ function Header({ open, handleDrawerOpen }) {
 				>
 					Nomic.js
 				</Typography>
-				{/*
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-		  */}
+				<If check={false}>
+				<IconButton color="inherit">
+					<Badge badgeContent={4} color="secondary">
+					<NotificationsIcon />
+					</Badge>
+				</IconButton>
+				</If>
 
-				<IconButton color="inherit" onClick={handleClickOpen}>
+				<IconButton color="inherit" onClick={handleClickOpen} >
 					<SettingsIcon />
 				</IconButton>
-				<IconButton color="inherit" onClick={() => history.push("/login")}>
-					<AccountCircleIcon />
-				</IconButton>
-				{user ? user.name : ""}
+				<UserButton />
 			</Toolbar>
 			<SettingsDialog
 				handleClickOpen={handleClickOpen}

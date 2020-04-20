@@ -2,21 +2,15 @@ import React from "react";
 import { Provider, useDispatch, useSelector } from "react-redux";
 
 import List from "@material-ui/core/List";
-import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
 import ToggleSwitch from "@material-ui/core/Switch";
 import Button from "@material-ui/core/Button";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
-import Slide from "@material-ui/core/Slide";
 import TextField from "@material-ui/core/TextField";
 
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import ListSubheader from "@material-ui/core/ListSubheader";
 import SettingsBrightnessIcon from "@material-ui/icons/SettingsBrightness";
 import DnsIcon from "@material-ui/icons/Dns";
 

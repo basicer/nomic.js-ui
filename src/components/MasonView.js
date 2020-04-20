@@ -15,7 +15,7 @@ function encode(target, name, ctx) {
     }
     let exp = { type: "Literal", value: JSON.stringify(target) };
     if (typeof target.$v === "string" && target.$v.indexOf("\n") !== -1) {
-        return {
+        exp = {
             "type": "TemplateLiteral",
             "quasis": [
                 {
@@ -30,12 +30,12 @@ function encode(target, name, ctx) {
             "expressions": []
         };
     }
-    if (typeof target.$v !== "undefined") {
+    else if (typeof target.$v !== "undefined") {
         exp = {
             type: "Literal", value: target.$v
         };
     }
-    if (target.$t === "object") {
+    else if (target.$t === "object") {
         let props = []
         for ( let k in target.prop ) {
             console.log(target.prop[k]);
@@ -48,7 +48,7 @@ function encode(target, name, ctx) {
             props.push({
                 type: 'Property',
                 computed: false,
-                key: {type: 'Literal', value: k},
+                key: /^[a-zA-Z0-9]*$/.test(k) ? {type: 'Identifier', name: k} : {type: 'Literal', value: k},
                 value: v
             });
         }
@@ -58,7 +58,7 @@ function encode(target, name, ctx) {
             exp = {type: 'ObjectExpression', properties: props};
         }
     }
-    if (target.$t === "function") {
+    else if (target.$t === "function") {
         let f;
         if ( target.src ) {
             f = parse(target.src.trim(), {tokens: true, comment: true, range: true});
@@ -90,8 +90,6 @@ function encode(target, name, ctx) {
 }
 
 export default function MasonView({data}) {
-    console.log("DATA", data);
- 
     let ctx = React.useMemo(() => {
         if (!data || !data.root) return;
         console.log(data);
@@ -106,8 +104,7 @@ export default function MasonView({data}) {
         for ( let k in go.prop ) {
             if (go.prop[k].v.$s) continue;
             let r = encode(go.prop[k].v, { type: 'Identifier', name: k }, ctx);
-            if (k === 'proposals') {
-                //ctx.locations[go.prop[k].v.$ref] = { type: 'Identifier', name: 'proposals' };
+            if (k === 'proposals' || k === "banner") {
                 ctx.code.pop();
             }
         }

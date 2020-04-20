@@ -5,7 +5,8 @@ import Button from "@material-ui/core/Button";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
+
+import {Paper, Checkbox} from "../../material";
 
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
@@ -16,15 +17,15 @@ import { useGamestate, useUser } from "../../hooks";
 import { useHistory } from "react-router-dom";
 
 import nacl from "tweetnacl";
-import api from "../../api";
-
+import {useAPI} from "../../hooks";
 
 const useStyles = makeStyles(theme => ({
 	paper: {
 		marginTop: theme.spacing(8),
 		display: "flex",
 		flexDirection: "column",
-		alignItems: "center"
+		alignItems: "center",
+		padding: theme.spacing(4)
 	},
 	avatar: {
 		margin: theme.spacing(1),
@@ -49,6 +50,7 @@ export default function SignIn() {
 	const dispatch = useDispatch();
 	const currentUser = useUser();
 	const history = useHistory();
+	const api = useAPI();
 
 	React.useEffect(() => {
 		if (currentUser) history.push(`/users/${currentUser.name}`);
@@ -91,7 +93,6 @@ export default function SignIn() {
 	function login() {
 		if (okay) {
 			let sig = nacl.sign(new Uint8Array(1), o.secret);
-			console.log("SIG", Buffer.from(sig).toString("base64"));
 			api.setAuth(state.user, Buffer.from(sig).toString("base64"));
 			dispatch({ type: "LOGIN", user: state.user, request: api.get("/login") });
 			if (state.remember) {
@@ -103,7 +104,7 @@ export default function SignIn() {
 
 	return (
 		<Container component="main" maxWidth="xs">
-			<div className={classes.paper}>
+			<Paper className={classes.paper}>
 				<Avatar className={classes.avatar}>
 					<LockOutlinedIcon />
 				</Avatar>
@@ -115,7 +116,6 @@ export default function SignIn() {
 					autoComplete="off"
 					onSubmit={e => e.preventDefault()}
 				>
-					{o.type}
 					<Autocomplete
 						id="combo-box-demo"
 						options={users}
@@ -145,7 +145,7 @@ export default function SignIn() {
 						required
 						fullWidth
 						name="kkey"
-						label="Password"
+						label="Private Key / Password"
 						type="password"
 						id="key"
 						autoComplete="off"
@@ -184,7 +184,7 @@ export default function SignIn() {
           </Grid>
           */}
 				</form>
-			</div>
+			</Paper>
 		</Container>
 	);
 }

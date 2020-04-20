@@ -9,10 +9,18 @@ import IconButton from "@material-ui/core/IconButton";
 
 import { makeStyles } from "@material-ui/core/styles";
 
+import { useSelector, useDispatch } from "react-redux";
+
 import { NavLink as RouterLink } from "react-router-dom";
-import { ListItem, ListItemIcon, ListItemText } from "../material";
+import { 
+	List, ListItem, ListItemIcon, ListItemText,
+	ListItemSecondaryAction, Switch, AccountTreeIcon,
+} from "../material";
+
+import {useSimulator} from "../hooks";
 
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+
 
 //import ListSubheader from "@material-ui/core/ListSubheader";
 
@@ -31,6 +39,10 @@ const useStyles = makeStyles(styles);
 
 export default function Navigation({ open, handleDrawerClose }) {
 	const classes = useStyles();
+	const dispatch = useDispatch();
+	const store = useSelector(x => x);
+	const simuator = useSimulator();
+
 	let links = [
 		["Banner", "/", <DescriptionIcon />, {exact: true}],
 		["Inspect", "/inspect", <DashboardIcon />],
@@ -52,7 +64,7 @@ export default function Navigation({ open, handleDrawerClose }) {
 				</IconButton>
 			</div>
 			<Divider />
-			<div>
+			<List>
 				{
 					links.map(([name, url, icon, extra={}]) =>
 						<ListItem
@@ -70,7 +82,19 @@ export default function Navigation({ open, handleDrawerClose }) {
 						</ListItem>
 					)
 				}
-			</div>
+			<Divider />
+			<ListItem>
+				<ListItemIcon><AccountTreeIcon /></ListItemIcon>
+				<ListItemText primary="Simulator" />
+				<ListItemSecondaryAction hidden={!open}>
+				<Switch
+					edge="end"
+					onChange={v => dispatch({type: 'TOGGLE_SIMULATOR', value: v})}
+					checked={!!store.simulator}
+				/>
+				</ListItemSecondaryAction>
+			</ListItem>
+			</List>
 		</Drawer>
 	);
 }
