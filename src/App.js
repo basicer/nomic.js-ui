@@ -331,6 +331,8 @@ export default function App() {
 				</ThemeProvider>
 				</Suspense>
 			</BrowserRouter>
+			<link rel='stylesheet' href='/monokai.css' disabled={paletteType === 'light'} />
+			<link rel='stylesheet' href='/github.css' disabled={paletteType !== 'light'} />
 		</>
 	);
 }
