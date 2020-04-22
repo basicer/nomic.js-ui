@@ -32,6 +32,7 @@ import PeopleIcon from "@material-ui/icons/People";
 //import BarChartIcon from "@material-ui/icons/BarChart";
 import LayersIcon from "@material-ui/icons/Layers";
 import DescriptionIcon from '@material-ui/icons/Description';
+import BallotIcon from "@material-ui/icons/Ballot";
 
 //import AssignmentIcon from "@material-ui/icons/Assignment";
 
@@ -46,9 +47,10 @@ export default function Navigation({ open, handleDrawerClose }) {
 	let links = [
 		["Banner", "/", <DescriptionIcon />, {exact: true}],
 		["Inspect", "/inspect", <DashboardIcon />],
-		["Proposals", "/proposals", <ListIcon />],
+		["Proposals", "/proposals", <BallotIcon />],
 		["Users", "/users", <PeopleIcon />],
-		["Crypto", "/crypto", <LayersIcon />]
+		["Api Client", "/api-client", <ListIcon />],
+		["Crypto", "/crypto", <LayersIcon />],
 	];
 	return (
 		<Drawer

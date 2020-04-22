@@ -1,14 +1,18 @@
 import React from "react";
 import { Typography, Divider, Button } from "@material-ui/core";
 import { Send as SendIcon } from "@material-ui/icons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
 import AceEditor from "react-ace";
+import "ace-builds/webpack-resolver";
 
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-monokai";
+import "ace-builds/src-min-noconflict/ext-language_tools";
+import "ace-builds/src-noconflict/snippets/javascript";
+
 
 import { useAPI } from "../../hooks";
 import { makeStyles } from "@material-ui/core/styles";
@@ -25,7 +29,7 @@ export default function NewProposal() {
 	const api = useAPI();
 	let [code, setCode] = React.useState("");
 	let classes = useStyles();
-
+	const paletteType = useSelector(store => store.theme);
 
 	function sendProposal() {
 		dispatch({
@@ -59,14 +63,19 @@ export default function NewProposal() {
 			<br />
 			<AceEditor
 				mode="javascript"
-				theme="monokai"
+				theme={paletteType === "light" ? "github" : "monokai"}
 				onChange={setCode}
 				value={code}
 				width="100%"
 				height="500px"
 				fontSize={14}
 				name="new-proposal-ace"
-				editorProps={{ $blockScrolling: true }}
+				editorProps={{
+					$blockScrolling: true
+				}}
+				setOptions={{
+					useWorker: true
+				}}
 			/>
 		</>
 	);

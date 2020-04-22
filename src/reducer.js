@@ -49,6 +49,11 @@ function reconstruct(x) {
 const defaultStore = {
 	settings: {
 		base: window.localStorage.base || "https://nomicjs.basicer.repl.co"
+	},
+	'api-request': {
+		method: 'GET',
+		path: '',
+		data: '{\n\t\n}'
 	}
 };
 
@@ -100,6 +105,12 @@ export default function reducer(store = defaultStore, action) {
 					state: reconstruct(copy)
 				}};
 			}
+		case "API_CLIENT_REQUEST_SUCCESS":
+			return {...store, 'api-response': action.result}
+		case "API_CLIENT_REQUEST_PENDING":
+			return { ...store, 'api-response': undefined }
+		case "SET_API_REQUESET":
+			return { ...store, 'api-request': action.data }
 		default:
 			return store;
 	}

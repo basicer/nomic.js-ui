@@ -36,7 +36,7 @@ import Navigation from "./components/Navigation";
 import SettingsDialog from "./components/SettingsDialog";
 import Crypto from "./components/pages/Crypto";
 import Profile from "./components/pages/Profile";
-
+import ApiClient from "./components/pages/ApiClient";
 
 
 import styles from "./styles";
@@ -315,6 +315,7 @@ export default function App() {
 									<Route exact path="/inspect" component={Inspect} />
 									<Route exact path="/login" component={Login} />
 									<Route exact path="/crypto" component={Crypto} />
+									<Route exact path="/api-client" component={ApiClient} />
 									
 								</Switch>
 							</Container>

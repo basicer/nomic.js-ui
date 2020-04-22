@@ -3041,7 +3041,7 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
-commander@^2.11.0, commander@^2.20.0, commander@^2.9.0:
+commander@^2.11.0, commander@^2.20.0:
   version "2.20.3"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
@@ -4246,13 +4246,6 @@ eslint@^6.6.0:
     table "^5.2.3"
     text-table "^0.2.0"
     v8-compile-cache "^2.0.3"
-
-esper.js@basicer/esper.js#nomic:
-  version "0.5.0-dev"
-  resolved "https://codeload.github.com/basicer/esper.js/tar.gz/4394dd3894690fc5d396cd00365a6970aa64250a"
-  dependencies:
-    commander "^2.9.0"
-    esprima "^4.0.0"
 
 espree@^6.1.2:
   version "6.2.1"

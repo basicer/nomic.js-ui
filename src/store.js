@@ -7,7 +7,7 @@ function request_middleware({ getState }) {
 		next({ type: action.type + "_PENDING" });
 		action.request.then(
 			result => {
-				next({ ...action, type: action.type + "_SUCCESS", data: result.data });
+				next({ ...action, type: action.type + "_SUCCESS", data: result.data, result: result });
 				if (action.onSuccess) action.onSuccess(result);
 			},
 			err => {

@@ -26,7 +26,9 @@ export {default as Switch} from "@material-ui/core/Switch";
 export {default as Badge} from "@material-ui/core/Badge";
 export {default as Checkbox} from "@material-ui/core/Checkbox";
 
-
+export { default as InputBase } from "@material-ui/core/InputBase";
+export { default as Select } from "@material-ui/core/Select";
+export { default as Chip } from "@material-ui/core/Chip";
 
 export {default as Tab} from "@material-ui/core/Tab";
 export {default as Tabs} from "@material-ui/core/Tabs";
@@ -51,3 +53,4 @@ export { default as ChevronLeftIcon} from "@material-ui/icons/ChevronLeft";
 export { default as AccountCircleIcon} from "@material-ui/icons/AccountCircle";
 export { default as AccountTreeIcon} from '@material-ui/icons/AccountTree';
 export { default as NotificationsIcon} from '@material-ui/icons/Notifications';
+export { default as SendIcon } from '@material-ui/icons/Send';

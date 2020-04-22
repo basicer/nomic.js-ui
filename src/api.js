@@ -18,6 +18,7 @@ setAuth(
 
 export default {
 	...client,
+	client: client,
 	setAuth,
 	setBase: base => (client.defaults.baseURL = base + "/api")
 };
