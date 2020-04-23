@@ -1,0 +1,1 @@
+{"version":3,"sources":["simulator.js"],"names":["console","log"],"mappings":"iGAAAA,QAAQC,IAAI","file":"static/js/7.bec2d4f7.chunk.js","sourcesContent":["console.log(\"Simulator Loaded\");"],"sourceRoot":""}
