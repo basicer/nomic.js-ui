@@ -48,7 +48,7 @@ function reconstruct(x) {
 
 const defaultStore = {
 	settings: {
-		base: window.localStorage.base || "https://nomicjs.basicer.repl.co"
+		base: window.localStorage.base || "https://nomic.pylif.com"
 	},
 	'api-request': {
 		method: 'GET',
