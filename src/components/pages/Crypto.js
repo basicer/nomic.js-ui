@@ -69,8 +69,8 @@ export default function Crypto() {
                             label="OpenSSH Public Key"
                             id="pkey"
                             autoComplete="off"
-                            readonly
-                            value={'ssh-ed25519 ' + encoded.toString('base64')}
+                            readOnly
+                            value={'ssh-ed25519 ' + encoded.toString('base64') + ' ' + key.comment}
                         />
                         <TextField
                             variant="outlined"
@@ -83,7 +83,7 @@ export default function Crypto() {
                             autoComplete="off"
                             multiline
                             rowsMax={3}
-                            readonly
+                            readOnly
                             value={key.secret.toString('base64')}
                         />
                     </form>

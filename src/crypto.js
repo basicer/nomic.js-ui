@@ -37,6 +37,7 @@ export function deriveKey(str) {
     let h = Buffer.from(nacl.hash(Buffer.from(str, "utf8")));
     let o = nacl.sign.keyPair.fromSeed(h.slice(0, 32));
     let type = 'hash';
+    let comment = '';
     console.log(str);
     try {
         let m = str.match(env);
@@ -47,8 +48,7 @@ export function deriveKey(str) {
             h = s;
             o = nacl.sign.keyPair.fromSecretKey(s);
             type = 'raw';
-        } else if ( s.length === 250 ) {
-
+        } else if ( s.length >= 230 ) {
             let buf = new Str(s);
             let magic = buf.readCString();
             console.log("S", magic);
@@ -80,6 +80,7 @@ export function deriveKey(str) {
             let a = pks.readBuffer();
             let b = pks.readBuffer();
             o = nacl.sign.keyPair.fromSecretKey(b);
+            comment = c.reduce((s,x) => s + String.fromCharCode(x), '');
             type = 'openssl';
         }
 
@@ -89,6 +90,7 @@ export function deriveKey(str) {
         public: Buffer.from(o.publicKey),
         secret: Buffer.from(o.secretKey),
         type: type,
+        comment: comment
     };
 
 
