@@ -38,7 +38,8 @@ export function deriveKey(str) {
     let o = nacl.sign.keyPair.fromSeed(h.slice(0, 32));
     let type = 'hash';
     let comment = '';
-    console.log(str);
+    let debug = (...args) => false;
+    debug(str);
     try {
         let m = str.match(env);
         if (m) str = m[1];
@@ -51,15 +52,15 @@ export function deriveKey(str) {
         } else if ( s.length >= 230 ) {
             let buf = new Str(s);
             let magic = buf.readCString();
-            console.log("S", magic);
+            debug("S", magic);
 
             var cipher = buf.readString();
             var kdf = buf.readString();
-            console.log("Ciper", cipher, kdf);
+            debug("Ciper", cipher, kdf);
             var opts = buf.readString();
 
             var keys = buf.readInt();
-            console.log("Nkeys", keys);
+            debug("Nkeys", keys, opts);
 
             var pub = buf.readBuffer();
             var priv = buf.readBuffer();
@@ -67,18 +68,20 @@ export function deriveKey(str) {
             let pubs = new Str(pub);
             let header = pubs.readString();
             let pppp = pubs.readBuffer();
-            console.log("Public", header, pppp.length);
+            debug("Public", header, pppp.length);
 
-            console.log("Private", priv.toString("utf8"), priv.length);
+            debug("Private", priv.toString("utf8"), priv.length);
 
 
             let pks = new Str(priv);
             let k1 = pks.readInt();
             let k2 = pks.readInt();
-            console.log("L", k1, k2);
+            if (k1 !== k2) throw new Error();
             pks.readBuffer();
             let a = pks.readBuffer();
             let b = pks.readBuffer();
+            let c = pks.readBuffer();
+            debug("A",a,"B",b, a.reduceRight((p, v, i) => p && v === pppp[i], true));
             o = nacl.sign.keyPair.fromSecretKey(b);
             comment = c.reduce((s,x) => s + String.fromCharCode(x), '');
             type = 'openssl';

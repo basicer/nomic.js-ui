@@ -297,7 +297,6 @@ export default function App() {
 			<EventConnector />
 			<ApiConnector />
 			<BrowserRouter>
-				<Suspense fallback={<Backdrop className={classes.backdrop}><CircularProgress size="200px" /></Backdrop>}>
 				<ThemeProvider theme={theme}>
 					<div className={classes.root}>
 						<CssBaseline />
@@ -306,6 +305,7 @@ export default function App() {
 						<main className={classes.content}>
 							<div className={classes.appBarSpacer} />
 							<Container maxWidth="lg" className={classes.container}>
+								<Suspense fallback={<Backdrop className={classes.backdrop}><CircularProgress size="200px" /></Backdrop>}>
 								<Switch>
 									<Route path="/users/:user" component={Profile} />
 									<Route path="/proposals/new" component={NewProposal} />
@@ -318,6 +318,7 @@ export default function App() {
 									<Route exact path="/api-client" component={ApiClient} />
 									
 								</Switch>
+								</Suspense>
 							</Container>
 						</main>
 					</div>
@@ -329,7 +330,6 @@ export default function App() {
 					</Backdrop>
 					<MySnackBar />
 				</ThemeProvider>
-				</Suspense>
 			</BrowserRouter>
 			<link rel='stylesheet' href='/monokai.css' disabled={paletteType === 'light'} />
 			<link rel='stylesheet' href='/github.css' disabled={paletteType !== 'light'} />

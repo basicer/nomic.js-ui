@@ -38,7 +38,7 @@ function encode(target, name, ctx) {
     else if (target.$t === "object") {
         let props = []
         for ( let k in target.prop ) {
-            console.log(target.prop[k]);
+            //console.log(target.prop[k]);
             let v = encode(target.prop[k].v, {
                 type: 'MemberExpression',
                 object: name,
@@ -92,7 +92,7 @@ function encode(target, name, ctx) {
 export default function MasonView({data}) {
     let ctx = React.useMemo(() => {
         if (!data || !data.root) return;
-        console.log(data);
+        //console.log(data);
         let ctx = {
             references: data.references,
             code: [],
@@ -104,7 +104,7 @@ export default function MasonView({data}) {
         for ( let k in go.prop ) {
             if (go.prop[k].v.$s) continue;
             let r = encode(go.prop[k].v, { type: 'Identifier', name: k }, ctx);
-            if (k === 'proposals' || k === "banner") {
+            if (k === 'proposals' || k === "banner" || k === 'global') {
                 ctx.code.pop();
             }
         }

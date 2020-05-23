@@ -37,7 +37,7 @@ function reconstruct(x) {
 			}
 			p.upvars = {};
 			for (let k in what.upvars) {
-				p.upvars[k] = o(what.upvars[k]);
+				p.upvars[k] = o(what.upvars[k])[k];
 			}
 			return p;
 		}

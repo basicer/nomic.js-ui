@@ -33,6 +33,9 @@ import PeopleIcon from "@material-ui/icons/People";
 import LayersIcon from "@material-ui/icons/Layers";
 import DescriptionIcon from '@material-ui/icons/Description';
 import BallotIcon from "@material-ui/icons/Ballot";
+import FindInPageIcon from "@material-ui/icons/FindInPage";
+import ContactlessIcon from '@material-ui/icons/Contactless';
+import ExploreIcon from '@material-ui/icons/Explore';
 
 //import AssignmentIcon from "@material-ui/icons/Assignment";
 
@@ -46,10 +49,10 @@ export default function Navigation({ open, handleDrawerClose }) {
 
 	let links = [
 		["Banner", "/", <DescriptionIcon />, {exact: true}],
-		["Inspect", "/inspect", <DashboardIcon />],
+		["Inspect", "/inspect", <FindInPageIcon />],
 		["Proposals", "/proposals", <BallotIcon />],
 		["Users", "/users", <PeopleIcon />],
-		["Api Client", "/api-client", <ListIcon />],
+		["Api Client", "/api-client", <ContactlessIcon />],
 		["Crypto", "/crypto", <LayersIcon />],
 	];
 	return (

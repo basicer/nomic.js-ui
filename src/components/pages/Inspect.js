@@ -66,6 +66,11 @@ export default function Inspect() {
 				</span>
 			);
 		}
+		if ( typeof data === "function") {
+			return (
+				<ObjectLabel name={name} data={data} isNonenumerable={isNonenumerable} />
+			);
+		}
 		return (
 			<ObjectLabel name={name} data={data} isNonenumerable={isNonenumerable} />
 		);

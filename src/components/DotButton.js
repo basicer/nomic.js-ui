@@ -23,7 +23,7 @@ export default function DotButton({ actions }) {
                 open={!!anchorEl}
                 onClose={handleClose}
             >
-                {Object.entries(actions).map(([name, action]) => <MenuItem onClick={() => {
+                {Object.entries(actions).map(([name, action]) => <MenuItem key={name} onClick={() => {
                     action();
                     handleClose();
                 }}>{name}</MenuItem>)}
